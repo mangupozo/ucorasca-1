@@ -53,9 +53,11 @@ Scratch = (function(window, document) {
 	/*
 	 * Initialize variables and html elements
 	 */
-	function init() {
+	function init(layers) {
 		height = window.innerHeight;
 		width = window.innerWidth;
+		
+		numLayers = layers;
 		
 		/* Layer */
 		layerCanvas = document.createElement('canvas');
@@ -76,18 +78,27 @@ Scratch = (function(window, document) {
 			imageCanvas.getContext('2d').drawImage(image, 0, 0, imageCanvas.width, imageCanvas.height);
 		}
 		image.src = './img/ganar.jpg';
-	};
+		
+		/* Events */
+		document.addEventListener('touchstart', scratch, false);
+		document.addEventListener('touchmove', scratch, false);
+	}
 	
-	/*
-	 * Set the number of layers
-	 */
-	function setNumberOfLayers(number) {
-		this.numLayers = number;
+	function scratch(event) {		
+		/* Create appropriate event object to read the touch coordinates */         
+		var eventObj = event.touches[0];
+		
+		/* Stores the starting X/Y coordinate when finger touches the device screen */
+		var x = eventObj.pageX;
+		var y = eventObj.pageY;
+		
+		event.preventDefault();
+		
+		alert(x + "/" + y);
 	}
 	
 	return {
-		init: init,
-		setNumberOfLayers: setNumberOfLayers
+		init: init
 	}
 
 }(window, document));
