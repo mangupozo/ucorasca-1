@@ -1,7 +1,7 @@
 /*
  * Scratch.js
  * 
- * Module which contains scratched functions
+ * Module which contains functions to scratch
  * 
  * Version: 0.1a @ April 2013
  */
@@ -10,8 +10,30 @@ var Scratch = {}
 
 Scratch = (function(window, document) {
 
-	var canvas;
-	var image;
+	/*
+	 * Height of canvas element
+	 */
+	var height;
+
+	/*
+	 * Store the canvas of layer
+	 */
+	var layerCanvas;
+	
+	/*
+	 * Store the canvas of image
+	 */
+	var imageCanvas;
+	
+	/*
+	 * Number of layers
+	 */
+	var numLayers = 1; // default
+	
+	/*
+	 * Width of canvas element
+	 */
+	var width;
 	
 	/*
 	 * Draw layers on canvas
@@ -32,20 +54,40 @@ Scratch = (function(window, document) {
 	 * Initialize variables and html elements
 	 */
 	function init() {
-		canvas = document.createElement('canvas');
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight;
-			
-		drawLayer(canvas, '#b0b0b0');
-			
-		image = new Image();
-		image.src = 'img/ganar.jpg';
-			
-		document.body.appendChild(canvas);
+		height = window.innerHeight;
+		width = window.innerWidth;
+		
+		/* Layer */
+		layerCanvas = document.createElement('canvas');
+		layerCanvas.height = height;
+		layerCanvas.width = width;
+				
+		drawLayer(layerCanvas, '#b0b0b0');			
+		
+		document.body.appendChild(layerCanvas);
+		
+		/* Image */
+		imageCanvas = document.createElement('canvas');
+		imageCanvas.height = height;
+		imageCanvas.width = width;
+				
+		var image = new Image();
+		image.onload = function() {
+			imageCanvas.getContext('2d').drawImage(image, 0, 0, imageCanvas.width, imageCanvas.height);
+		}
+		image.src = './img/ganar.jpg';
 	};
 	
+	/*
+	 * Set the number of layers
+	 */
+	function setNumberOfLayers(number) {
+		this.numLayers = number;
+	}
+	
 	return {
-		init: init
+		init: init,
+		setNumberOfLayers: setNumberOfLayers
 	}
 
 }(window, document));
