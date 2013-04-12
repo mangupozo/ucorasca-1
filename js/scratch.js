@@ -9,6 +9,11 @@
 var Scratch = {}
 
 Scratch = (function(window, document) {
+	
+	/*
+	 * Canvas context where to draw 
+	 */
+	var context;
 
 	/*
 	 * Height of canvas element
@@ -30,9 +35,10 @@ Scratch = (function(window, document) {
 	 */
 	var numLayers = 1; // default
 	
-	var sectorSize;
+	var sectionsByRow;
+	var sectionSize;
 	
-	/*pixel
+	/*
 	 * Width of canvas element
 	 */
 	var width;
@@ -52,8 +58,48 @@ Scratch = (function(window, document) {
 		context.restore();
 	}
 	
-	function getSectorFromPosition(x, y) {
-		return parseInt(x / sectorSize) + (parseInt(y / sectorSize) * parseInt(width / sectorSize));
+	/*
+	 * Draw the original image on the given section
+	 * 
+	 * @param sectionNumber Number of section
+	 */
+	function drawSection(sectionNumber) {
+		var sectionCoordinates = getSectionCoordinates(sectionNumber);
+		
+		if (((sectionNumber % sectionsByRow) == (sectionsByRow - 1)) && ((width % sectionSize) != 0)) {
+			strideX = sectionSize + (width % sectionSize);
+		}
+			
+		if (sectionNumber >= (pixelImageLogic.length - sectionsByRow)) {
+			strideY = sectionSize + (height % sectionSize);
+		}
+		
+		// Draw original image's zone on canvas
+		layerCanvas.drawImage(canvasImg, x, y, strideX, strideY, x, y, strideX, strideY);			
+	}
+	
+	/*
+	 * Get the number of section from the given coordinates
+	 * 
+	 * @param x Coordinate Y
+	 * @param y Coordinate Y
+	 * @return Number of section
+	 */
+	function getSectionNumberFromPosition(x, y) {
+		return parseInt(x / sectorSize) + (parseInt(y / sectorSize) * sectionsByRow);
+	}
+	
+	/*
+	 * Get the position and size from the given section
+	 * 
+	 * @param sectionNumber Number of section
+	 * @return Coordinates X, Y
+	 */
+	function getSectionCoordinates(sectionNumber) {
+		var x = (sectionNumber % sectionsByRow) * sectionSize;
+		var y = (parseInt(sectionNumber / sectionsByRow)) * sectionSize;
+		
+		return {x: x, y: y}; 
 	}
 	
 	/*
@@ -64,7 +110,7 @@ Scratch = (function(window, document) {
 		height = window.innerHeight;
 		width = window.innerWidth;
 		
-		if (layers !== null) {
+		if (layers !== undefined) {
 			numLayers = layers;
 		}
 		
@@ -75,7 +121,7 @@ Scratch = (function(window, document) {
 		layerCanvas.height = height;
 		layerCanvas.width = width;
 				
-		drawLayer(layerCanvas, '#b0b0b0');			
+		drawLayer(layerCanvas, '#b0b0b0');
 		
 		document.body.appendChild(layerCanvas);
 		
@@ -91,8 +137,8 @@ Scratch = (function(window, document) {
 		image.src = './img/ganar.jpg';
 		
 		/* Events */
-		document.addEventListener('touchstart', scratch, false);
-		document.addEventListener('touchmove', scratch, false);
+		document.layerCanvas.addEventListener('touchstart', scratch, false);
+		document.layerCanvas.addEventListener('touchmove', scratch, false);
 	}
 	
 	function scratch(event) {
@@ -104,12 +150,11 @@ Scratch = (function(window, document) {
 		/* Stores the starting X/Y coordinate when finger touches the device screen */
 		var x = eventObj.pageX;
 		var y = eventObj.pageY;
-		
-		alert(x + "/" + y);
 	}
 	
-	function setSectorSize() {
+	function setSectionSize() {
 		sectorSize = 10;
+		sectionsByRow = parseInt(width / sectionSize);
 	}
 	
 	return {
