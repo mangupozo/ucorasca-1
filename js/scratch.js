@@ -30,7 +30,9 @@ Scratch = (function(window, document) {
 	 */
 	var numLayers = 1; // default
 	
-	/*
+	var sectorSize;
+	
+	/*pixel
 	 * Width of canvas element
 	 */
 	var width;
@@ -50,14 +52,23 @@ Scratch = (function(window, document) {
 		context.restore();
 	}
 	
+	function getSectorFromPosition(x, y) {
+		return parseInt(x / sectorSize) + (parseInt(y / sectorSize) * parseInt(width / sectorSize));
+	}
+	
 	/*
 	 * Initialize variables and html elements
 	 */
 	function init(layers) {
+		/* Variables */
 		height = window.innerHeight;
 		width = window.innerWidth;
 		
-		numLayers = layers;
+		if (layers !== null) {
+			numLayers = layers;
+		}
+		
+		setSectorSize();
 		
 		/* Layer */
 		layerCanvas = document.createElement('canvas');
@@ -84,7 +95,9 @@ Scratch = (function(window, document) {
 		document.addEventListener('touchmove', scratch, false);
 	}
 	
-	function scratch(event) {		
+	function scratch(event) {
+		event.preventDefault();
+		
 		/* Create appropriate event object to read the touch coordinates */         
 		var eventObj = event.touches[0];
 		
@@ -92,9 +105,11 @@ Scratch = (function(window, document) {
 		var x = eventObj.pageX;
 		var y = eventObj.pageY;
 		
-		event.preventDefault();
-		
 		alert(x + "/" + y);
+	}
+	
+	function setSectorSize() {
+		sectorSize = 10;
 	}
 	
 	return {
