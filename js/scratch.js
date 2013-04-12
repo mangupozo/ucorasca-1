@@ -155,8 +155,8 @@ Scratch = (function(window, document) {
 		image.src = 'img/ganar.jpg';
 	
 		/* Events */
-		document.body.addEventListener('touchstart', scratch, false);
-		document.body.addEventListener('touchmove', scratch, false);
+		document.addEventListener('mousedown', scratch, true);
+		document.addEventListener('mousemove', scratch, true);
 	}
 	
 	function scratch(event) {
@@ -164,11 +164,13 @@ Scratch = (function(window, document) {
 		event.preventDefault(); 
 		
 		/* Create appropriate event object to read the touch coordinates */         
-		var eventObj = event.touches[0];
+		//var eventObj = event.touches[0];
 		
 		/* Stores the starting X/Y coordinate when finger touches the device screen */
-		var x = eventObj.pageX;
-		var y = eventObj.pageY;
+		//var x = eventObj.pageX;
+		//var y = eventObj.pageY;
+		var x = event.pageX;
+		var y = event.pageY;
 
         /* Calculate logic section */
 		var currentSection = getSectionNumberFromPosition(x, y);
@@ -191,7 +193,7 @@ Scratch = (function(window, document) {
 	 * Set the array that contains counter of sections touched
 	 */
 	function setCounterSectionsTouched() {
-		var numSections = (parseInt(width - width % sectionSize) * parseInt(height - height % sectionSize)) / Math.pow(sectionSize, 2);		
+		var numSections = parseInt((parseInt(width - width % sectionSize) * parseInt(height - height % sectionSize)) / Math.pow(sectionSize, 2));		
 		
 		counterSectionsTouched = new Array(numSections);
 		
@@ -205,7 +207,7 @@ Scratch = (function(window, document) {
 	 * Set the size of a section
 	 */
 	function setSectionSize() {
-		sectionSize = 15;
+		sectionSize = width / 20;
 	}
 	
 	return {
