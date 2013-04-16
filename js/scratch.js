@@ -106,14 +106,6 @@ Scratch = (function(window, document) {
 		var h = sectionSize;
 		var w = sectionSize;
 		
-		if (((sectionNumber % sectionsByRow) == (sectionsByRow - 1)) && ((width % sectionSize) != 0)) {
-			h = sectionSize + (width % sectionSize);
-		}
-			
-		if (sectionNumber >= (counterSectionsTouched.length - sectionsByRow)) {
-			w = sectionSize + (height % sectionSize);
-		}
-		
 		return {x: x, y: y, width: w, height: h};
 	}
 	
@@ -129,8 +121,7 @@ Scratch = (function(window, document) {
 			numLayers = layers;
 		}
 
-		setSectionSize();		
-		sectionsByRow = parseInt(width / sectionSize);
+		setSectionSize();
 		setCounterSectionsTouched();
 		
 		/* Layer */
@@ -193,7 +184,7 @@ Scratch = (function(window, document) {
 	 * Set the array that contains counter of sections touched
 	 */
 	function setCounterSectionsTouched() {
-		var numSections = parseInt((parseInt(width - width % sectionSize) * parseInt(height - height % sectionSize)) / Math.pow(sectionSize, 2));		
+		var numSections = parseInt((parseInt(width) * parseInt(height)) / Math.pow(sectionSize, 2));		
 		
 		counterSectionsTouched = new Array(numSections);
 		
@@ -204,10 +195,29 @@ Scratch = (function(window, document) {
 	}
 	
 	/*
-	 * Set the size of a section
+	 * Set the size of a section and re-scale the image if it is necessary
 	 */
 	function setSectionSize() {
-		sectionSize = width / 20;
+		if (width >= 1024) {
+			sectionsByRow = 80;
+		} else {
+			sectionsByRow = 40;
+		}
+				
+		if (width % sectionsByRow == 0) {
+			sectionSize = width / sectionsByRow;
+			
+			if (height % sectionsByRow != 0) {
+				height = Math.floor(height / sectionsByRow) * sectionsByRow;
+			}
+		} else {
+			sectionSize = Math.floor(width / sectionsByRow);
+			width = Math.floor(height / sectionsByRow) * sectionsByRow;
+			
+			if (height % sectionsByRow != 0) {
+				height = Math.floor(height / sectionsByRow) * sectionsByRow;
+			}
+		}
 	}
 	
 	return {
