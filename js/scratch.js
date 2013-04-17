@@ -204,7 +204,7 @@ Scratch = (function(window, document) {
 	function setSectionSize() {
 		if (width >= 1024) {
 			sectionsByRow = 80;
-		} else if (width >= 360) {
+		} else if (width >= 640) {
 			sectionsByRow = 40;
 		} else {
 			sectionsByRow = 20;
