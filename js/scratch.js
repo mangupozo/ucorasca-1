@@ -56,6 +56,96 @@ Scratch = (function(window, document) {
 	var width;
 
 	/*
+	 * Draw an image's zone on a ellipse placed in the corresponding section 
+	 * taking in account the coordinates and dimension of that section.
+	 * For that, this function uses Bezier's curves.
+	 * 
+	 * @param x Coordinate 'x' of section
+	 * @param y Coordinate 'y' of section
+	 * @param width Width of section 
+	 * @param height Height of section 
+	 */    	
+    function drawEllipse(x, y, width, height) {
+    
+    	// Calculate center of the section
+    	var centerX = x + width/2;
+    	var centerY = y + height/2;
+    	
+    	// Calculate hypotenuse
+    	var h = Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2));    	
+    	h = h*1.3;
+
+    	// Save the context of canvas
+    	layerContext.save();
+    	
+    	// it allows to show the background's zone drawn in the front's canvas
+		layerContext.globalCompositeOperation = 'destination-out';
+
+		// Begin the path of draw
+    	layerContext.beginPath();
+		
+    	// Start point (center of upper side)
+    	layerContext.moveTo(centerX, centerY - h); 
+
+    	// bezier's curve A 
+    	layerContext.bezierCurveTo(
+            centerX + h, centerY - h, // Control point 1
+            centerX + h, centerY + h, // Control point 2
+            centerX, centerY + h	  // End point curve A and start point curve B
+        );
+    	
+    	// bezier's curve B    	
+    	layerContext.bezierCurveTo(
+            centerX - h, centerY + h, // Control point 1
+            centerX - h, centerY - h, // Control point 2
+            centerX, centerY - h 	  // End point curve B
+        );
+   	
+    	// Set the style of fill
+    	layerContext.fillStyle = 'white';
+		layerContext.shadowBlur = 20; // set size of the circle's shadow    	
+    	layerContext.fill();    	  	
+    	
+    	// Close the path
+    	layerContext.closePath();
+
+    	// Restore the context of canvas
+    	layerContext.restore();    	
+    }
+
+	/*
+	 * Draw an image's zone on a circle placed in the corresponding section 
+	 * taking in account the coordinates and dimension of that section
+	 * 
+	 * @param x Coordinate 'x' of section
+	 * @param y Coordinate 'y' of section
+	 * @param width Width of section 
+	 * @param height Height of section 
+	 */    
+    function drawCircle(x, y, width, height) {
+    	
+    	// Calculate hypotenuse
+    	var h = Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2));  
+    	h = h*1.2;
+    	
+    	// Save the context of canvas
+    	layerContext.save();
+
+    	// it allows to show the background's zone drawn in the front's canvas
+		layerContext.globalCompositeOperation = 'destination-out';
+
+		// Draw circle
+		layerContext.shadowBlur = 20; // set size of the circle's shadow
+		layerContext.beginPath();
+		layerContext.arc(x + width/2, y + height/2, h, 0, Math.PI*2, true);
+		layerContext.fill();
+		layerContext.closePath();
+		
+		// Restore the context of canvas
+    	layerContext.restore();		
+    }
+    
+	/*
 	 * Draw layers on canvas
 	 * 
 	 * @param canvas Canvas element
@@ -76,11 +166,18 @@ Scratch = (function(window, document) {
 	 * @param sectionNumber Number of section
 	 */
 	function drawSection(sectionNumber) {
+		
+		console.log("sectionNumber: " + sectionNumber);
+		
 		var section = getSectionParameters(sectionNumber);
 		
-		/* Draw original image section on canvas */
-		layerContext.drawImage(imageCanvas, section.x, section.y, section.width, section.height, 
-											section.x, section.y, section.width, section.height);			
+		/* Draw original image section on canvas */ 
+		//layerContext.drawImage(imageCanvas, section.x, section.y, section.width, section.height, 
+		//									section.x, section.y, section.width, section.height);
+		// Before solution that draws squares
+
+		//drawCircle(section.x, section.y, section.width, section.height); // Solution that draws circles
+		drawEllipse(section.x, section.y, section.width, section.height);	// Solution that draws ellipses			
 	}
 	
 	/*
@@ -139,9 +236,7 @@ Scratch = (function(window, document) {
 		layerCanvas.height = height;
 		layerContext = layerCanvas.getContext('2d');
 		
-		drawLayer(layerCanvas, '#b0b0b0');
-		
-		document.body.appendChild(layerCanvas);
+		drawLayer(layerCanvas, '#b0b0b0');		
 		
 		/* Image */
 		imageCanvas = document.createElement('canvas');
@@ -154,6 +249,10 @@ Scratch = (function(window, document) {
 		}
 		image.src = 'img/ganar.jpg';
 	
+		/* Appends elements to body */
+		document.body.appendChild(imageCanvas);
+		document.body.appendChild(layerCanvas);
+		
 		/* Events */
 		document.body.addEventListener('touchstart', scratch, false);
 		document.body.addEventListener('touchmove', scratch, false);
@@ -192,7 +291,7 @@ Scratch = (function(window, document) {
 	 */
 	function setCounterSectionsTouched() {
 		var numSections = (parseInt(width - width % sectionSize) * parseInt(height - height % sectionSize)) / Math.pow(sectionSize, 2);		
-		
+		console.log("numSections: " + numSections);
 		counterSectionsTouched = new Array(numSections);
 		
 		/* Initialize sections array */
