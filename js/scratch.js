@@ -146,38 +146,42 @@ Scratch = (function(window, document) {
 		image.src = 'img/ganar.jpg';
 	
 		/* Events */
-		document.addEventListener('mousedown', scratch, true);
-		document.addEventListener('mousemove', scratch, true);
+		document.addEventListener('touchstart', scratch, false);
+		document.addEventListener('touchmove', scratch, false);
+		/*document.addEventListener('mousedown', scratch, true);
+		document.addEventListener('mousemove', scratch, true);*/
 	}
 	
+	/*
+	 * Draw the original image over the layer
+	 * 
+	 * @param event Touch event
+	 */
 	function scratch(event) {
 		/* Avoid actions by default */
 		event.preventDefault(); 
 		
 		/* Create appropriate event object to read the touch coordinates */         
-		//var eventObj = event.touches[0];
+		var eventObj = event.touches[0];
 		
 		/* Stores the starting X/Y coordinate when finger touches the device screen */
-		//var x = eventObj.pageX;
-		//var y = eventObj.pageY;
-		var x = event.pageX;
-		var y = event.pageY;
+		var x = eventObj.pageX;
+		var y = eventObj.pageY;
+		//var x = event.pageX;
+		//var y = event.pageY;
 
-        /* Calculate logic section */
-		var currentSection = getSectionNumberFromPosition(x, y);
-		
-		/* If selected section is bigger than length of the logic sections */
-		if (currentSection >= counterSectionsTouched.length) {
-			currentSection -= sectionsByRow;
+		if (x < width && y < height) {
+	        /* Calculate logic section */
+			var currentSection = getSectionNumberFromPosition(x, y);
+			
+			/* Increasing count of touch on the section */
+			counterSectionsTouched[currentSection] += 1;
+	
+			/* Drawing the section with original image section */
+			if(counterSectionsTouched[currentSection] == numLayers) {		
+				drawSection(currentSection);				
+			}
 		}
-		
-		/* Increasing count of touch on the section */
-		counterSectionsTouched[currentSection] += 1;
-
-		/* Drawing the section with original image section */
-		if(counterSectionsTouched[currentSection] == numLayers) {		
-			drawSection(currentSection);				
-		} 
 	}
 	
 	/*
@@ -200,23 +204,22 @@ Scratch = (function(window, document) {
 	function setSectionSize() {
 		if (width >= 1024) {
 			sectionsByRow = 80;
-		} else {
+		} else if (width >= 360) {
 			sectionsByRow = 40;
+		} else {
+			sectionsByRow = 20;
 		}
-				
+		
+		/* Re-scale the image canvas if it is necessary */
 		if (width % sectionsByRow == 0) {
 			sectionSize = width / sectionsByRow;
-			
-			if (height % sectionsByRow != 0) {
-				height = Math.floor(height / sectionsByRow) * sectionsByRow;
-			}
 		} else {
 			sectionSize = Math.floor(width / sectionsByRow);
-			width = Math.floor(height / sectionsByRow) * sectionsByRow;
+			width = Math.floor(width / sectionsByRow) * sectionsByRow;
+		}
 			
-			if (height % sectionsByRow != 0) {
-				height = Math.floor(height / sectionsByRow) * sectionsByRow;
-			}
+		if (height % sectionsByRow != 0) {
+			height = Math.floor(height / sectionSize) * sectionSize;
 		}
 	}
 	
