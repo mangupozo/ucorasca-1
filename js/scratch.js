@@ -88,9 +88,11 @@ Scratch = (function(window, document) {
 	 * @param y Coordinate 'y' of section
 	 * @param width Width of section 
 	 * @param height Height of section 
+	 * @param alpha Level of transparency to apply
 	 */    	
-    function drawEllipse(x, y, width, height) {
+    function drawEllipse(x, y, width, height, alpha) {
     
+    	console.log("drawEllipse.alpha: " + alpha);
     	// Calculate center of the section
     	var centerX = x + width/2;
     	var centerY = y + height/2;
@@ -104,7 +106,9 @@ Scratch = (function(window, document) {
     	
     	// it allows to show the background's zone drawn in the front's canvas
 		layerContext.globalCompositeOperation = 'destination-out';
-
+		layerContext.globalAlpha = alpha; // Alternative 1 for setting level of transparency
+		
+    	console.log("globalAlpha: " + layerContext.globalAlpha);
 		// Begin the path of draw
     	layerContext.beginPath();
 
@@ -127,6 +131,7 @@ Scratch = (function(window, document) {
     	
     	// Set the style of fill
     	layerContext.fillStyle = 'white';
+    	//layerContext.fillStyle = "rgba(0,0,0,0.2)"; // Alternative 2 for setting level of transparency
 		layerContext.shadowBlur = 10; // set size of the circle's shadow    	
     	layerContext.fill();    	  	
     	
@@ -159,7 +164,7 @@ Scratch = (function(window, document) {
 		layerContext.globalCompositeOperation = 'destination-out';
 
 		// Draw circle
-		layerContext.shadowBlur = 20; // set size of the circle's shadow
+		layerContext.shadowBlur = 20; // set size of the circle's shadow	
 		layerContext.beginPath();
 		layerContext.arc(x + width/2, y + height/2, h, 0, Math.PI*2, true);
 		layerContext.fill();
@@ -168,12 +173,12 @@ Scratch = (function(window, document) {
 		// Restore the context of canvas
     	layerContext.restore();		
     }
+    // # Delete drawCircle method
     
     /*
      * Draw the original image when interest zone has been scratched
      */
     function drawImage() {
-    	console.log("ENTRA");
     	layerContext.drawImage(imageCanvas, 0, 0, layerCanvas.width, layerCanvas.height, 
 											0, 0, layerCanvas.width, layerCanvas.height);
     }
@@ -194,19 +199,20 @@ Scratch = (function(window, document) {
 	}		
 
 	/*
-	 * Draw the original image on the given section
+	 * Draw the original image on the ellipse with center in coordinates 'x' and 'y'
 	 * 
-	 * @param sectionNumber Number of section
+	 * @param x Coordinate 'x' of the ellipse's center
+	 * @param y Coordinate 'y' of the ellipse's center 
+	 * @param currentLayer Current layer of section where coordinates 'x' and 'y' are found
 	 */
-	function drawScratch(x, y) {
+	function drawScratch(x, y, currentLayer) {
 				
-		/* Draw original image section on canvas */ 
-		//layerContext.drawImage(imageCanvas, section.x, section.y, section.width, section.height, 
-		//									section.x, section.y, section.width, section.height);
-		// Before solution that draws squares
-
-		//drawCircle(section.x, section.y, section.width, section.height); // Solution that draws circles
-		drawEllipse(x, y, sectionSize, sectionSize);	// Solution that draws ellipses			
+		// Calculate transparency's level
+		var alpha = (currentLayer >= numLayers) ? 1 : ((currentLayer/numLayers)*0.2).toFixed(2);
+		console.log("alpha: " + alpha);
+		
+		// Draw ellipse
+		drawEllipse(x, y, sectionSize, sectionSize, alpha);				
 	}
 	
 	/*
@@ -228,6 +234,7 @@ Scratch = (function(window, document) {
 		//drawCircle(section.x, section.y, section.width, section.height); // Solution that draws circles
 		drawEllipse(section.x, section.y, section.width, section.height);	// Solution that draws ellipses			
 	}
+	// # Delete drawSection method 
 	
 	function finish() {
 		document.removeEventListener('touchstart', scratch, false);
@@ -339,6 +346,7 @@ Scratch = (function(window, document) {
 	 * @param event Touch event
 	 */
 	function scratch(event) {
+		
 		/* Avoid actions by default */
 		event.preventDefault(); 
 		
@@ -355,7 +363,9 @@ Scratch = (function(window, document) {
 	        /* Calculate logic section */
 			var currentSection = getSectionNumberFromPosition(x, y);		
 
-			if (lastSectionTouched != currentSection) {
+			if ( event.type == 'touchstart' || // # bug fixed
+				 lastSectionTouched != currentSection) {
+				
 				lastSectionTouched = currentSection;
 						
 				if (counterSectionsTouched[currentSection] <= numLayers) {		
@@ -363,11 +373,14 @@ Scratch = (function(window, document) {
 					counterSectionsTouched[currentSection] += 1;
 				}					
 				
+				drawScratch(x, y, counterSectionsTouched[currentSection]);
+				
 				/* Drawing the section with original image section */
 				if (counterSectionsTouched[currentSection] >= numLayers) {	
-					//drawSection(currentSection);
-					drawScratch(x, y);
+					//drawSection(currentSection); // # delete drawSection function 
 					
+					//drawScratch(x, y);					
+					//drawScratch(x, y, counterSectionsTouched[currentSection]);
 					
 					if ( isInterest(currentSection) &&
 						 (counterSectionsTouched[currentSection] >= numLayers))	{
