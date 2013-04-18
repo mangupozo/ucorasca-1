@@ -102,27 +102,27 @@ Scratch = (function(window, document) {
 
 		// Begin the path of draw
     	layerContext.beginPath();
-		
+
     	// Start point (center of upper side)
-    	layerContext.moveTo(centerX, centerY - h); 
+    	layerContext.moveTo(centerX - h, centerY); 
 
     	// bezier's curve A 
     	layerContext.bezierCurveTo(
-            centerX + h, centerY - h, // Control point 1
-            centerX + h, centerY + h, // Control point 2
-            centerX, centerY + h	  // End point curve A and start point curve B
+            centerX - h, centerY - h, // Control point 1
+            centerX + h, centerY - h, // Control point 2
+            centerX + h, centerY	  // End point curve A and start point curve B
         );
     	
     	// bezier's curve B    	
     	layerContext.bezierCurveTo(
-            centerX - h, centerY + h, // Control point 1
-            centerX - h, centerY - h, // Control point 2
-            centerX, centerY - h 	  // End point curve B
+            centerX + h, centerY + h, // Control point 1
+            centerX - h, centerY + h, // Control point 2
+            centerX - h, centerY  	  // End point curve B
         );
-   	
+    	
     	// Set the style of fill
     	layerContext.fillStyle = 'white';
-		layerContext.shadowBlur = 20; // set size of the circle's shadow    	
+		layerContext.shadowBlur = 10; // set size of the circle's shadow    	
     	layerContext.fill();    	  	
     	
     	// Close the path
@@ -178,6 +178,22 @@ Scratch = (function(window, document) {
 		context.fillRect(0, 0, canvas.width, canvas.height);
 		context.restore();
 	}		
+
+	/*
+	 * Draw the original image on the given section
+	 * 
+	 * @param sectionNumber Number of section
+	 */
+	function drawScratch(x, y) {
+				
+		/* Draw original image section on canvas */ 
+		//layerContext.drawImage(imageCanvas, section.x, section.y, section.width, section.height, 
+		//									section.x, section.y, section.width, section.height);
+		// Before solution that draws squares
+
+		//drawCircle(section.x, section.y, section.width, section.height); // Solution that draws circles
+		drawEllipse(x, y, sectionSize, sectionSize);	// Solution that draws ellipses			
+	}
 	
 	/*
 	 * Draw the original image on the given section
@@ -318,9 +334,12 @@ Scratch = (function(window, document) {
 				counterSectionsTouched[currentSection] += 1;
 			}
 			
+			/* */
+			drawScratch(x, y);
+			
 			/* Drawing the section with original image section */
 			if(counterSectionsTouched[currentSection] == numLayers) {		
-				drawSection(currentSection);
+				//drawSection(currentSection);
 				/** BY JC: Checking if the section is of interest **/
 				if(isInterest(currentSection)){
 					revealedInterestSections+=1;
