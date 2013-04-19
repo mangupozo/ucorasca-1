@@ -91,9 +91,8 @@ Scratch = (function(window, document) {
 	 */    	
     function drawEllipse(x, y, width, height) {
     
-    	// Calculate center of the section
-    	var centerX = x + width/2;
-    	var centerY = y + height/2;
+    	// # Bug 2 fixed: it's not necessary calculate center of ellipse. Coordinates 'x' 
+    	// # and 'y' contain the coordinates of the center of the ellipse
     	
     	// Calculate hypotenuse
     	var h = Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2));    	
@@ -109,20 +108,20 @@ Scratch = (function(window, document) {
     	layerContext.beginPath();
 
     	// Start point (center of upper side)
-    	layerContext.moveTo(centerX - h, centerY); 
+    	layerContext.moveTo(x - h, y); 
 
     	// bezier's curve A 
     	layerContext.bezierCurveTo(
-            centerX - h, centerY - h, // Control point 1
-            centerX + h, centerY - h, // Control point 2
-            centerX + h, centerY	  // End point curve A and start point curve B
+            x - h, y - h, // Control point 1
+            x + h, y - h, // Control point 2
+            x + h, y	  // End point curve A and start point curve B
         );
     	
     	// bezier's curve B    	
     	layerContext.bezierCurveTo(
-            centerX + h, centerY + h, // Control point 1
-            centerX - h, centerY + h, // Control point 2
-            centerX - h, centerY  	  // End point curve B
+            x + h, y + h, // Control point 1
+            x - h, y + h, // Control point 2
+            x - h, y  	  // End point curve B
         );
     	
     	// Set the style of fill
@@ -355,7 +354,9 @@ Scratch = (function(window, document) {
 	        /* Calculate logic section */
 			var currentSection = getSectionNumberFromPosition(x, y);		
 
-			if (lastSectionTouched != currentSection) {
+			if ( event.type == 'touchstart' || // # bug fixed 1
+				 lastSectionTouched != currentSection) {	
+
 				lastSectionTouched = currentSection;
 						
 				if (counterSectionsTouched[currentSection] <= numLayers) {		
