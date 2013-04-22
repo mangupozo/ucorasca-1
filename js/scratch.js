@@ -35,6 +35,11 @@ Scratch = (function(window, document) {
 	var interestPercentage = 80;
 	
 	/*
+	 * Indicate  if 'ontouch' events are supported 
+	 */
+	var isTouchSupported = 'ontouchstart' in window.document;
+	
+	/*
 	 * Store the canvas of layer
 	 */
 	var layerCanvas;
@@ -313,7 +318,7 @@ Scratch = (function(window, document) {
 		document.addEventListener('touchstart', scratch, false);
 		document.addEventListener('touchmove', scratch, false);
 		//document.addEventListener('mousedown', scratch, true);
-		//document.addEventListener('mousemove', scratch, true);
+		document.addEventListener('mousemove', scratch, true); // it's necessary in windows phone applications
 	}
 	
 	/* 
@@ -342,11 +347,12 @@ Scratch = (function(window, document) {
 		event.preventDefault(); 
 		
 		/* Create appropriate event object to read the touch coordinates */         
-		var eventObj = event.touches[0];
+		//var eventObj = event.touches[0];
+		var eventObj = isTouchSupported ? event.touches[0] : event;
 		
 		/* Stores the starting X/Y coordinate when finger touches the device screen */
-		var x = eventObj.pageX;
-		var y = eventObj.pageY;
+		var x = eventObj.pageX;// offsetX
+		var y = eventObj.pageY;// offsetY
 		//var x = event.pageX;
 		//var y = event.pageY;
 
