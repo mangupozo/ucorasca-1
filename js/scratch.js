@@ -32,7 +32,12 @@ Scratch = (function(window, document) {
 	/* 
 	 * Percentage of interest needed to win
 	 */
-	var interestPercentage = 80;
+	var interestPercentage = 65;
+	
+	/*
+	 * Indicate if 'onmouse' events are supported
+	 */
+	var isMouseSupported = 'onmousemove' in window.document;
 	
 	/*
 	 * Indicate  if 'ontouch' events are supported 
@@ -85,7 +90,7 @@ Scratch = (function(window, document) {
 	var width;
 	
 	/*
-	 * Draw an image's zone on a ellipse placed in the corresponding section 
+	 * Draw an image zone on a ellipse placed in the corresponding section 
 	 * taking in account the coordinates and dimension of that section.
 	 * For that, this function uses Bezier's curves.
 	 * 
@@ -94,10 +99,9 @@ Scratch = (function(window, document) {
 	 * @param width Width of section 
 	 * @param height Height of section 
 	 */    	
-    function drawEllipse(x, y, width, height) {
-    
-    	// # Bug 2 fixed: it's not necessary calculate center of ellipse. Coordinates 'x' 
-    	// # and 'y' contain the coordinates of the center of the ellipse
+    function drawEllipse(x, y) {
+    	var width = sectionSize;
+    	var height = sectionSize;
     	
     	// Calculate hypotenuse
     	var h = Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2));    	
@@ -140,44 +144,11 @@ Scratch = (function(window, document) {
     	// Restore the context of canvas
     	layerContext.restore();    	
     }
-
-	/*
-	 * Draw an image's zone on a circle placed in the corresponding section 
-	 * taking in account the coordinates and dimension of that section
-	 * 
-	 * @param x Coordinate 'x' of section
-	 * @param y Coordinate 'y' of section
-	 * @param width Width of section 
-	 * @param height Height of section 
-	 */    
-    function drawCircle(x, y, width, height) {
-    	
-    	// Calculate hypotenuse
-    	var h = Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2));  
-    	h = h*1.2;
-    	
-    	// Save the context of canvas
-    	layerContext.save();
-
-    	// it allows to show the background's zone drawn in the front's canvas
-		layerContext.globalCompositeOperation = 'destination-out';
-
-		// Draw circle
-		layerContext.shadowBlur = 20; // set size of the circle's shadow
-		layerContext.beginPath();
-		layerContext.arc(x + width/2, y + height/2, h, 0, Math.PI*2, true);
-		layerContext.fill();
-		layerContext.closePath();
-		
-		// Restore the context of canvas
-    	layerContext.restore();		
-    }
     
     /*
-     * Draw the original image when interest zone has been scratched
+     * Draw the original image when interest zone has been fully scratched
      */
     function drawImage() {
-    	console.log("ENTRA");
     	layerContext.drawImage(imageCanvas, 0, 0, layerCanvas.width, layerCanvas.height, 
 											0, 0, layerCanvas.width, layerCanvas.height);
     }
@@ -195,49 +166,18 @@ Scratch = (function(window, document) {
 		context.fillStyle = background;
 		context.fillRect(0, 0, canvas.width, canvas.height);
 		context.restore();
-	}		
-
-	/*
-	 * Draw the original image on the given section
-	 * 
-	 * @param sectionNumber Number of section
-	 */
-	function drawScratch(x, y) {
-				
-		/* Draw original image section on canvas */ 
-		//layerContext.drawImage(imageCanvas, section.x, section.y, section.width, section.height, 
-		//									section.x, section.y, section.width, section.height);
-		// Before solution that draws squares
-
-		//drawCircle(section.x, section.y, section.width, section.height); // Solution that draws circles
-		drawEllipse(x, y, sectionSize, sectionSize);	// Solution that draws ellipses			
-	}
-	
-	/*
-	 * Draw the original image on the given section
-	 * 
-	 * @param sectionNumber Number of section
-	 */
-	function drawSection(sectionNumber) {
-		
-		console.log("sectionNumber: " + sectionNumber);
-		
-		var section = getSectionParameters(sectionNumber);
-		
-		/* Draw original image section on canvas */ 
-		//layerContext.drawImage(imageCanvas, section.x, section.y, section.width, section.height, 
-		//									section.x, section.y, section.width, section.height);
-		// Before solution that draws squares
-
-		//drawCircle(section.x, section.y, section.width, section.height); // Solution that draws circles
-		drawEllipse(section.x, section.y, section.width, section.height);	// Solution that draws ellipses			
 	}
 	
 	function finish() {
-		document.removeEventListener('touchstart', scratch, false);
-		document.removeEventListener('touchmove', scratch, false);
-		//document.removeEventListener('mousedown', scratch, true);
-		//document.removeEventListener('mousemove', scratch, true);
+		if (isTouchSupported) {
+			document.removeEventListener('touchstart', scratch, false);
+			document.removeEventListener('touchmove', scratch, false);
+		}
+		
+		if (isMouseSupported) {
+			document.removeEventListener('mousedown', scratch, false);
+			document.removeEventListener('mousemove', scratch, false);
+		}
 	}
 	
 	/*
@@ -315,10 +255,16 @@ Scratch = (function(window, document) {
 		setInterestZone(Math.round(width/2), Math.round(height/2), Math.round(width/2), Math.round(height/2));
 			
 		/* Events */
-		document.addEventListener('touchstart', scratch, false);
-		document.addEventListener('touchmove', scratch, false);
-		//document.addEventListener('mousedown', scratch, true);
-		document.addEventListener('mousemove', scratch, true); // it's necessary in windows phone applications
+		if (isTouchSupported) {
+			document.addEventListener('touchstart', scratch, false);
+			document.addEventListener('touchmove', scratch, false);
+		}
+		
+		if (isMouseSupported) {
+			/* it's necessary in windows phone applications */
+			document.addEventListener('mousedown', scratch, true);
+			document.addEventListener('mousemove', scratch, true);
+		}
 	}
 	
 	/* 
@@ -346,23 +292,18 @@ Scratch = (function(window, document) {
 		/* Avoid actions by default */
 		event.preventDefault(); 
 		
-		/* Create appropriate event object to read the touch coordinates */         
-		//var eventObj = event.touches[0];
+		/* Create appropriate event object to read the touch coordinates */
 		var eventObj = isTouchSupported ? event.touches[0] : event;
 		
 		/* Stores the starting X/Y coordinate when finger touches the device screen */
-		var x = eventObj.pageX;// offsetX
-		var y = eventObj.pageY;// offsetY
-		//var x = event.pageX;
-		//var y = event.pageY;
+		var x = eventObj.pageX;
+		var y = eventObj.pageY;
 
 		if (x < width && y < height) {
 	        /* Calculate logic section */
 			var currentSection = getSectionNumberFromPosition(x, y);		
 
-			if ( event.type == 'touchstart' || // # bug fixed 1
-				 lastSectionTouched != currentSection) {	
-
+			if (event.type == 'touchstart' || event.type == 'mousedown' || lastSectionTouched != currentSection) {	
 				lastSectionTouched = currentSection;
 						
 				if (counterSectionsTouched[currentSection] <= numLayers) {		
@@ -371,14 +312,10 @@ Scratch = (function(window, document) {
 				}					
 				
 				/* Drawing the section with original image section */
-				if (counterSectionsTouched[currentSection] >= numLayers) {	
-					//drawSection(currentSection);
-					drawScratch(x, y);
+				if (counterSectionsTouched[currentSection] >= numLayers) {
+					drawEllipse(x, y);
 					
-					
-					if ( isInterest(currentSection) &&
-						 (counterSectionsTouched[currentSection] >= numLayers))	{
-						
+					if (isInterest(currentSection) && (counterSectionsTouched[currentSection] == numLayers))	{
 						revealedInterestSections += 1;
 						
 						if (getInterestPercentage() >= interestPercentage) {
@@ -427,8 +364,8 @@ Scratch = (function(window, document) {
 		var widthInSections =  getSectionNumberFromPosition(x + width, y) - startSection;
 		var heightInSections = (getSectionNumberFromPosition(x, y + height) - startSection) / sectionsByRow;
 		
-		for (var i = 0; i < heightInSections; i++){
-			for (var j = 0; j < widthInSections; j++){
+		for (var i = 0; i < heightInSections; i++) {
+			for (var j = 0; j < widthInSections; j++) {
 				counterInterestSections[sectionsByRow * i + startSection + j] = 1;
 				numberOfInterestSections += 1;
 			}
