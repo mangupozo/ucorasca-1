@@ -11,8 +11,11 @@
     </head>
     <body>
     	<script type="text/javascript">
+    		var a = window.location.toString();
+			var capas = a.substring(a.indexOf("=")+1);
+    	
     		window.onload = function() {
-    			Scratch.init(2);
+    			Scratch.init(capas);
     		}
     	</script>
     </body>

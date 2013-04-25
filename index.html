@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="Content-type" content="text/html"/>
+    <link href="css/form.css" rel="stylesheet"/>
+    <title>UCO-Rasca</title>
+    
+    <!-- JavaScript: nº de capas -->
+    <script type="text/javascript">
+	  function testResults (form) {
+    		var layerNo = form.numberOfLayers.value;
+    		
+		window.open("rasca.html?layer="+layerNo);  //Abre una nueva página
+	  }
+    </script>
+  </head>
+  
+  <body>
+    
+   
+    <!--Pagina-->
+    <section id="pagina">
+      <!--cabecera-->
+      <h1>UCO Rasca<linea></h1>
+      
+      <!--logo-->
+      <img id="logo" src="img/logo.jpg" />
+      
+      <!--Numero de Capas-->
+      <form class="form" name="myform" method='get'><h2>Capas:
+	  <select name="numberOfLayers">
+	      <option selected="selected">1</option>
+	      <option>2</option>
+	      <option>3</option>
+	  </select>
+      </h2>
+      <button class="btn" type='button' name="button" value='Comenzar' onclick="testResults(myform)">Comenzar</button>
+      </form>
+      
+      
+    </section>
+    
+    
+    
+    <!--Pie Pagina-->
+    <section id="piepagina">
+      <h3>Universidad de Córdoba</h3>
+      
+    </section>
+    
+  </body>
+</html>

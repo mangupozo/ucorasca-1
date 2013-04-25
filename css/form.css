@@ -1,0 +1,135 @@
+@media screen and (min-width: 0px) and (min-height: 0px) {
+	body {
+		margin: 0;
+		height: 100%;
+		padding: 0;
+		position: absolute;
+		width: 100%;
+	}
+}
+
+
+section#pagina{
+    background: #ffffff;
+    height: 83%;
+    text-align: center;
+    width: 100%;
+}
+
+section#piepagina{
+    background: #cee2e9;
+    height: 10%;
+    text-align: center;
+    width: 100%;
+}
+
+img#logo{
+    height: auto;
+    position: relative;
+    width: 60%;
+}
+
+
+h1{
+  color: #004264;
+  font-family: title;
+  font-size: 300%;
+  font-weight: bolder;
+  left: 10%;
+  position: relative;
+  text-align: center;
+  width: 80%;
+  z-index: 2;
+}
+
+h2{
+  color: #00539b;
+  font-family: title;
+  font-size: 150%;
+  font-weight: bolder;
+  left: 10%;
+  position: relative;
+  text-align: center;
+  top: 10%;
+  width: 80%;
+  z-index: 2;
+}
+
+h3{
+  color: #004264;
+  font-family: title;
+  font-size: 100%;
+  font-weight: bolder;
+  left: 10%;
+  position: absolute;
+  text-align: center;
+  top: auto;
+  width: 80%;
+  z-index: 2;
+}
+
+linea {
+  display: block;
+  border-style: inset;
+  border-top-style: inset;
+  border-right-style: inset;
+  border-bottom-style: inset;
+  border-left-style: inset;
+  border-width: 1px;
+  border-top-width: 1px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+}
+
+form{
+  position: relative;
+  
+}
+
+select {
+  background-color: #ffffff;
+  border: 1px solid #cee2e9;
+  border-radius: 4px;
+  -webkit-appearance: menulist;
+  box-sizing: border-box;
+  color: #004264;
+  font-size: 80%;
+  font-weight: bold;
+  cursor: default;
+  width: 25%;
+}
+
+
+button {
+  -moz-box-shadow:inset 0px 1px 0px 0px #cae3fc;
+  -webkit-box-shadow:inset 0px 1px 0px 0px #cae3fc;
+  box-shadow:inset 0px 1px 0px 0px #cae3fc;
+  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #79bbff), color-stop(1, #4197ee) );
+  background:-moz-linear-gradient( center top, #79bbff 5%, #4197ee 100% );
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#79bbff', endColorstr='#4197ee');
+  background-color:#79bbff;
+  -moz-border-radius:6px;
+  -webkit-border-radius:6px;
+  border-radius:10px;
+  border:1px solid #469df5;
+  display:inline-block;
+  color:#ffffff;
+  font-family:arial;
+  font-size:130%;
+  font-weight:bold;
+  padding:6px 24px;
+  text-decoration:none;
+  text-shadow:1px 1px 0px #287ace;
+  position: relative;
+  top: 10%;
+  
+}
+button:hover {
+  background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #4197ee), color-stop(1, #79bbff) );
+  background:-moz-linear-gradient( center top, #4197ee 5%, #79bbff 100% );
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#4197ee', endColorstr='#79bbff');
+  background-color:#4197ee;
+}
+button.btn, input[type="submit"].btn {
+}
