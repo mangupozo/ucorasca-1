@@ -25,6 +25,11 @@ Scratch = (function(window, document) {
 	var height;
 	
 	/*
+	 * Indicates that the game has finished
+	 */
+	var end = false;
+	
+	/*
 	 * Store the canvas of image
 	 */
 	var imageCanvas;
@@ -83,6 +88,16 @@ Scratch = (function(window, document) {
 	 * Size of a section
 	 */
 	var sectionSize;
+	
+	/*
+	 * Max time to scratch 
+	 */
+	var time = 15;
+	
+	/*
+	 * Function that executes 'timer' each 1 second
+	 */
+	var timeout;
 	
 	/*
 	 * Width of canvas element
@@ -146,7 +161,7 @@ Scratch = (function(window, document) {
     }
     
     /*
-     * Draw the original image when interest zone has been fully scratched
+     * Draw the original image when interest zone has been fully scratched or time has expired
      */
     function drawImage() {
     	layerContext.drawImage(imageCanvas, 0, 0, layerCanvas.width, layerCanvas.height, 
@@ -168,7 +183,12 @@ Scratch = (function(window, document) {
 		context.restore();
 	}
 	
-	function finish() {
+	/*
+	 * Finish the game
+	 * 
+	 * @param timeout Indicates if the time has expired or not
+	 */
+	function finish(timeoutExpired) {
 		if (isTouchSupported) {
 			document.removeEventListener('touchstart', scratch, false);
 			document.removeEventListener('touchmove', scratch, false);
@@ -177,6 +197,15 @@ Scratch = (function(window, document) {
 		if (isMouseSupported) {
 			document.removeEventListener('mousedown', scratch, false);
 			document.removeEventListener('mousemove', scratch, false);
+		}
+		
+		clearTimeout(timeout);
+		
+		if (timeoutExpired) {
+			showMessage(timeoutExpired);
+		} else {
+			drawImage();
+			showMessage(timeoutExpired);
 		}
 	}
 	
@@ -262,9 +291,12 @@ Scratch = (function(window, document) {
 		
 		if (isMouseSupported) {
 			/* it's necessary in windows phone applications */
-			document.addEventListener('mousedown', scratch, true);
-			document.addEventListener('mousemove', scratch, true);
+			document.addEventListener('mousedown', scratch, false);
+			document.addEventListener('mousemove', scratch, false);
 		}
+		
+		/* Timer */
+		timeout = setTimeout(timer(), 1000);
 	}
 	
 	/* 
@@ -318,8 +350,9 @@ Scratch = (function(window, document) {
 					if (isInterest(currentSection) && (counterSectionsTouched[currentSection] == numLayers))	{
 						revealedInterestSections += 1;
 						
-						if (getInterestPercentage() >= interestPercentage) {
-							drawImage();
+						if (getInterestPercentage() >= interestPercentage && end == false) {
+							end = true;
+							finish(false);
 						}
 					}
 				}
@@ -394,6 +427,30 @@ Scratch = (function(window, document) {
 			
 		if (height % sectionsByRow != 0) {
 			height = Math.floor(height / sectionSize) * sectionSize;
+		}
+	}
+	
+	function showMessage(timeoutExpired) {
+		var span = document.createElement("span");
+		
+		if (timeoutExpired) {
+			span.innerHTML = "<h1>¡¡¡Lo siento!!!</h1><h2>¡El tiempo ha terminado!</h2>";
+			span.className = "timeout"
+		} else {
+			span.innerHTML = "<h1>¡¡¡Enhorabuena!!!</h1><br><h2>¡¡¡Has ganado!!!</h2>";
+			span.className = "win";		
+		}
+		
+		document.body.appendChild(span);
+	}
+	
+	function timer() {
+		time -= 1;
+		
+		if (time == 0) {
+			finish(true);
+		} else {
+			timeout = setTimeout(timer, 1000);
 		}
 	}
 	
