@@ -7,6 +7,7 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="css/main.css">
+        <script src="js/communications.js"></script>
         <script src="js/scratch.js"></script>
     </head>
     <body>
@@ -15,7 +16,7 @@
 			var capas = a.substring(a.indexOf("=")+1);
     	
     		window.onload = function() {
-    			Scratch.init(capas);
+                Communications.init(Scratch.init);
     		}
     	</script>
     </body>

@@ -18,7 +18,17 @@ Scratch = (function(window, document) {
 	 * Array for taking the count of times that screen is touched on each section
 	 */
 	var counterSectionsTouched;
-	
+
+	/*
+	 * URL containing de background image
+	 */
+	var backgroundImageURL;
+
+	/*
+	 * URL containing de background image
+	 */
+	var foregroundImageURL;
+
 	/*
 	 * Height of canvas element
 	 */
@@ -38,7 +48,24 @@ Scratch = (function(window, document) {
 	 * Percentage of interest needed to win
 	 */
 	var interestPercentage = 65;
-	
+
+	/* 
+	 * Point where interest zone starts
+	 */
+	var interestPoint;
+
+	/* 
+	 * Height of the interest zone
+	 */
+	var interestHeight;
+
+	/* 
+	 * Width of the interest zone
+	 */
+	var interestWidth;
+
+
+
 	/*
 	 * Indicate if 'onmouse' events are supported
 	 */
@@ -245,14 +272,11 @@ Scratch = (function(window, document) {
 	/*
 	 * Initialize variables and html elements
 	 */
-	function init(layers) {
+	function init(JSONObject) {
+		setVariables(JSONObject);
 		/* Variables */
 		height = window.innerHeight;
 		width = window.innerWidth;
-		
-		if (layers !== undefined) {
-			numLayers = layers;
-		}
 
 		setSectionSize();
 		setCounterSectionsTouched();
@@ -263,14 +287,7 @@ Scratch = (function(window, document) {
 		layerCanvas.height = height;
 		layerContext = layerCanvas.getContext('2d');
 		
-		//drawLayer(layerCanvas, '#b0b0b0'); 
-		// # old version    
-
-		var fakeImage = new Image();	
-		fakeImage.onload = function () {
-			layerContext.drawImage(fakeImage, 0, 0, layerCanvas.width, layerCanvas.height);	
-		}
-		fakeImage.src = 'img/prueba.jpg';
+		drawLayer(layerCanvas, '#b0b0b0');		
 		
 		/* Image */
 		imageCanvas = document.createElement('canvas');
@@ -281,14 +298,14 @@ Scratch = (function(window, document) {
 		image.onload = function () {
 			imageCanvas.getContext('2d').drawImage(image, 0, 0, imageCanvas.width, imageCanvas.height);	
 		}
-		image.src = 'img/ganar.jpg';
+		image.src = backgroundImageURL;
 		
 		/* Appends elements to body */
 		document.body.appendChild(imageCanvas);
 		document.body.appendChild(layerCanvas);
 		
 		/* Interest zone */
-		setInterestZone(Math.round(width/2), Math.round(height/2), Math.round(width/2), Math.round(height/2));
+		setInterestZone(interestPoint[0], interestPoint[1], interestWidth, interestHeight);
 			
 		/* Events */
 		if (isTouchSupported) {
@@ -435,6 +452,24 @@ Scratch = (function(window, document) {
 		if (height % sectionsByRow != 0) {
 			height = Math.floor(height / sectionSize) * sectionSize;
 		}
+	}
+
+	function setVariables(JSONObject) {
+		numLayers =  JSONObject.layer;
+		//alert('numLayers='+numLayers);
+		time = JSONObject.time;
+		//alert('time='+time);
+		foregroundImageURL = JSONObject.foreground;
+		//alert('foregroundImageURL='+foregroundImageURL);
+		backgroundImageURL = JSONObject.background;
+		//alert('backgroundImageURL='+backgroundImageURL);
+		interestPoint = JSONObject.interestZone.point;
+		//alert('Point.x='+interestPoint[0]);
+		//alert('Point.y='+interestPoint[1]);
+		interestHeight = JSONObject.interestZone.width;
+		//alert('interestHeight='+interestHeight);		
+		interestWidth = JSONObject.interestZone.height;
+		//alert('interestWidth='+interestWidth);		
 	}
 	
 	function showMessage(timeoutExpired) {
