@@ -287,7 +287,16 @@ Scratch = (function(window, document) {
 		layerCanvas.height = height;
 		layerContext = layerCanvas.getContext('2d');
 		
-		drawLayer(layerCanvas, '#b0b0b0');		
+	
+		//drawLayer(layerCanvas, '#b0b0b0'); 
+		// # old version    
+
+		var fakeImage = new Image();	
+		fakeImage.onload = function () {
+			layerContext.drawImage(fakeImage, 0, 0, layerCanvas.width, layerCanvas.height);	
+		}
+		fakeImage.src = 'img/prueba.jpg';
+
 		
 		/* Image */
 		imageCanvas = document.createElement('canvas');
