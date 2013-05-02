@@ -501,6 +501,11 @@ Scratch = (function(window, document) {
 		document.body.appendChild(span);
 	}
 	
+	/*
+	 * Show the timer in the HTML
+	 * 
+	 * @param true to show it or false to not show it
+	 */
 	function showTimer(show) {		
 		if (show) {
 			timerSpan = document.createElement("timer");
@@ -511,7 +516,7 @@ Scratch = (function(window, document) {
 			document.body.appendChild(timerSpan);
 		}
 	}
-	
+
 	function timer() {
 		time -= 1;
 		updateTimerSpan();
@@ -523,6 +528,9 @@ Scratch = (function(window, document) {
 		}
 	}
 	
+	/*
+	 * Update the value of timer in the HTML
+	 */
 	function updateTimerSpan() {
 		timerSpan.innerHTML = time;
 	}
