@@ -9,15 +9,18 @@
 var Communications = {}
  
 Communications = (function(window, document){
+                //var reqUri = "http://uco-backend.herokuapp.com/games/puzzle/new";
                 var reqUri = "https://dl.dropboxusercontent.com/u/13253709/prueba.json";
-                function init( initScratch ){
+                function init( initGame ){
                         var jsonFile ;
                         xhrGet(reqUri, function(data) {
  
                                 jsonFile = JSON.parse(this.responseText);
                                 
+                                //alert("DIF: "+jsonFile.puzzle.difficult);
+
                                 // Init the scratch motion
-                                initScratch(jsonFile);
+                                initGame(jsonFile);
  
                         });
                        
