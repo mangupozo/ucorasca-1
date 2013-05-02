@@ -122,6 +122,11 @@ Scratch = (function(window, document) {
 	var time = 15;
 	
 	/*
+	 * Span element to show the timer value
+	 */
+	var timerSpan;
+	
+	/*
 	 * Function that executes 'timer' each 1 second
 	 */
 	var timeout;
@@ -329,6 +334,7 @@ Scratch = (function(window, document) {
 		}
 		
 		/* Timer */
+		showTimer(true);
 		timeout = setTimeout(timer(), 1000);
 	}
 	
@@ -495,14 +501,30 @@ Scratch = (function(window, document) {
 		document.body.appendChild(span);
 	}
 	
+	function showTimer(show) {		
+		if (show) {
+			timerSpan = document.createElement("timer");
+			
+			timerSpan.innerHTML = time;
+			timerSpan.className = "timer"
+				
+			document.body.appendChild(timerSpan);
+		}
+	}
+	
 	function timer() {
 		time -= 1;
+		updateTimerSpan();
 		
 		if (time == 0) {
 			finish(true);
 		} else {
 			timeout = setTimeout(timer, 1000);
 		}
+	}
+	
+	function updateTimerSpan() {
+		timerSpan.innerHTML = time;
 	}
 	
 	return {
