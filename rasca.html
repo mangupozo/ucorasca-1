@@ -16,7 +16,10 @@
 			var capas = a.substring(a.indexOf("=")+1);
     	
     		window.onload = function() {
-                Communications.init(Scratch.init);
+                if(capas==1)
+                    Communications.init(Scratch.init);
+                else
+                    Communications.init(Puzzle.setDificult);
     		}
     	</script>
     </body>

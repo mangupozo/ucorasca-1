@@ -484,7 +484,10 @@ Scratch = (function(window, document) {
 		interestHeight = JSONObject.interestZone.width;
 		//alert('interestHeight='+interestHeight);		
 		interestWidth = JSONObject.interestZone.height;
-		//alert('interestWidth='+interestWidth);		
+		//alert('interestWidth='+interestWidth);	
+		interestPercentage = JSONObject.interestZone.percentage;	
+		//alert('interestPct'+interestPercentage);	
+
 	}
 	
 	function showMessage(timeoutExpired) {
